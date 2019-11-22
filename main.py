@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
 import sys
+import json
+import requests
 from requests_oauthlib import OAuth1Session
 
 def get_oauth():
@@ -53,12 +55,44 @@ def get_favorites_list(oauth):
     print("Response status: %s" % response.status_code)
     print("Body: %s" % response.text)
 
+    return response
+
+
+def get_first(response):
+    result = json.loads(response.content)
+
+    first = result[1]
+
+    serialized = json.dumps(first)
+
+    print("First: %s" % serialized)
+
+    return first
+
+
+def get_entities(tweet):
+
+    entities = tweet["entities"]
+    
+
+    serialized = json.dumps(entities)
+
+    print("Entities: %s" % serialized)
+
+
+
 
 #Get the oauth tokens
 oauth = get_oauth()
 
 # Make the request
-get_favorites_list(oauth)
+response = get_favorites_list(oauth)
+
+tweet = get_first(response)
+
+get_entities(tweet)
+
+
 
 
 
