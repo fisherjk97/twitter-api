@@ -3,6 +3,7 @@ import os
 import sys
 import json
 import requests
+import wget
 from requests_oauthlib import OAuth1Session
 
 def get_oauth():
@@ -58,6 +59,20 @@ def get_favorites_list(oauth):
     return response
 
 
+def get_user_timeline(oauth):
+
+    screen_name = input("Enter a screen name to search for: ")
+    count = input("Enter the number of records to retrieve: ")
+
+    params = {"screen_name": screen_name, "count": count }
+
+    response = oauth.get("https://api.twitter.com/1.1/statuses/user_timeline.json", params = params)
+    print("Response status: %s" % response.status_code)
+    print("Body: %s" % response.text)
+
+    return response
+
+
 def get_first(response):
     result = json.loads(response.content)
 
@@ -81,18 +96,41 @@ def get_entities(tweet):
 
 
 
+def get_media(response):
+    tweets = json.loads(response)
+    media_files = set()
+    for status in tweets:
+        if("media" in status["entities"]):
+            media = status["entities"].get('media', [])
+            if(len(media) > 0):
+                media_files.add(media[0]['media_url'])
+                print("Media: %s" % media[0]['media_url'])
+
+    return media_files
+    
+def download_media(media_files):
+    for media_file in media_files:
+        wget.download(media_file)
+
+
+
 
 #Get the oauth tokens
 oauth = get_oauth()
 
 # Make the request
-response = get_favorites_list(oauth)
+#response = get_favorites_list(oauth)
 
-tweet = get_first(response)
+#tweet = get_first(response)
 
-get_entities(tweet)
+#get_entities(tweet)
 
 
+user_timeline = get_user_timeline(oauth)
+
+media_files = get_media(user_timeline.content)
+
+download_media(media_files)
 
 
 
