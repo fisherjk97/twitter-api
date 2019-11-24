@@ -6,9 +6,47 @@ import requests
 import wget
 from requests_oauthlib import OAuth1Session
 
+consumer_key = ""
+consumer_secret = ""
+screen_name = ""
+count = 0
+
+def read_config():
+    global consumer_key
+    global consumer_secret
+    global screen_name
+    global count
+
+    with open('config.json') as json_file:
+        data = json.load(json_file)
+        if("key" in data["consumer"]):
+            consumer_key = data["consumer"]["key"]
+        if("secret" in data["consumer"]): 
+            consumer_secret = data["consumer"]["secret"]
+        if("screen_name" in data["api"]):
+            screen_name = data["api"]["screen_name"]
+        if("count" in data["api"]):
+            count = data["api"]["count"]
+
+
+
+#terminal prompts
+def get_consumer_key():
+    return input("Please enter your key: ")
+
+def get_consumer_secret():
+    return input("Please enter your secret: ")
+
+def get_screen_name():
+    return input("Please enter a screen name: ")
+
+def get_tweet_count():
+    return input("Enter # of tweets: ")
+
+
 def get_oauth():
-    consumer_key = input("Please enter your key: ")  # Add your API key here
-    consumer_secret = input("Please enter your secret: ")  # Add your API secret key here
+    #consumer_key = input("Please enter your key: ")  # Add your API key here
+    #consumer_secret = input("Please enter your secret: ") 
 
     # Get request token
     request_token_url = "https://api.twitter.com/oauth/request_token"
@@ -44,6 +82,7 @@ def get_oauth():
 
     return oauth
 
+
 # Get Twitter Favorites
 def get_favorites_list(oauth):
 
@@ -61,8 +100,8 @@ def get_favorites_list(oauth):
 
 def get_user_timeline(oauth):
 
-    screen_name = input("Enter a screen name to search for: ")
-    count = input("Enter the number of records to retrieve: ")
+    #screen_name = input("Enter a screen name to search for: ")
+    #count = input("Enter the number of records to retrieve: ")
 
     params = {"screen_name": screen_name, "count": count }
 
@@ -113,6 +152,7 @@ def download_media(media_files):
         wget.download(media_file)
 
 
+read_config()
 
 
 #Get the oauth tokens
