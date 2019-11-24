@@ -29,21 +29,6 @@ def read_config():
             count = data["api"]["count"]
 
 
-
-#terminal prompts
-def get_consumer_key():
-    return input("Please enter your key: ")
-
-def get_consumer_secret():
-    return input("Please enter your secret: ")
-
-def get_screen_name():
-    return input("Please enter a screen name: ")
-
-def get_tweet_count():
-    return input("Enter # of tweets: ")
-
-
 def get_oauth():
     #consumer_key = input("Please enter your key: ")  # Add your API key here
     #consumer_secret = input("Please enter your secret: ") 
@@ -114,23 +99,16 @@ def get_user_timeline(oauth):
 
 def get_first(response):
     result = json.loads(response.content)
-
     first = result[1]
-
     serialized = json.dumps(first)
-
     print("First: %s" % serialized)
-
     return first
 
 
 def get_entities(tweet):
 
     entities = tweet["entities"]
-    
-
     serialized = json.dumps(entities)
-
     print("Entities: %s" % serialized)
 
 
@@ -152,25 +130,24 @@ def download_media(media_files):
         wget.download(media_file)
 
 
-read_config()
+
+def get_user_timeline_media(oauth):
+    user_timeline = get_user_timeline(oauth)
+    get_media(user_timeline.content)
+    #download_media(media_files)
 
 
-#Get the oauth tokens
-oauth = get_oauth()
+def main():
+    #read configuration settings
+    read_config()
 
-# Make the request
-#response = get_favorites_list(oauth)
+    #Get the oauth tokens
+    oauth = get_oauth()
 
-#tweet = get_first(response)
+    get_user_timeline_media(oauth)
 
-#get_entities(tweet)
-
-
-user_timeline = get_user_timeline(oauth)
-
-media_files = get_media(user_timeline.content)
-
-download_media(media_files)
+if __name__ == "__main__":
+    main()
 
 
 
