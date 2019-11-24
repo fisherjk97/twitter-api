@@ -4,6 +4,7 @@ import sys
 import json
 import requests
 import wget
+import webbrowser
 from requests_oauthlib import OAuth1Session
 
 consumer_key = ""
@@ -163,6 +164,44 @@ def search_by_hashtag(q, n):
 
     return response
 
+def data_to_html_table(data):
+    html = '<table><tbody>'
+    for item in data:
+        html += '<tr><td>' + str(item) + '</td></tr>'
+    html += '</tbody></table>'
+    return html
+
+def media_to_html_img(data):
+    html = '<img src='"'" + str(data) + "'"" width='50%'/>"
+    print("%s" % html)
+    return html
+
+def media_to_html_table(data):
+    html = '<table><tbody>'
+    for item in data:
+        html += '<tr><td>' + str(media_to_html_img(item)) + '</td></tr>'
+    html += '</tbody></table>'
+    print("%s" % html)
+    return html
+
+def write_file(filename, mode, data):
+    f = open(filename, "w")
+    f.write(data)
+    f.close()
+
+def open_html_file(filename):
+    #new = 2 # open in a new tab, if possible
+
+    #open a public URL, in this case, the webbrowser docs
+    #url = "http://docs.python.org/library/webbrowser.html"
+    #webbrowser.open(url,new=new)
+
+    # open an HTML file on my own (Windows) computer
+    #Change path to reflect file location
+    web_file = 'file:///'+os.getcwd()+'/' + filename
+    webbrowser.open_new_tab(web_file)
+
+
 def main():
     #read configuration settings
     read_config()
@@ -170,10 +209,16 @@ def main():
     #Get the oauth tokens
     get_oauth()
 
-    #get_user_timeline_media(oauth)
-    response = search_by_hashtag("#GodOfWar #PS4Share", 5)
-    get_hashtag_media(response.content)
+    
+    response = search_by_hashtag("#Spiderman #PS4Share", 10)
+    media = get_hashtag_media(response.content)
 
+    html = media_to_html_table(media)
+
+    filename = "index.html"
+    write_file(filename, "w", html)
+
+    open_html_file(filename)
 
 if __name__ == "__main__":
     main()
