@@ -10,6 +10,7 @@ consumer_key = ""
 consumer_secret = ""
 screen_name = ""
 count = 0
+oauth = {}
 
 def read_config():
     global consumer_key
@@ -30,6 +31,7 @@ def read_config():
 
 
 def get_oauth():
+    global oauth
     #consumer_key = input("Please enter your key: ")  # Add your API key here
     #consumer_secret = input("Please enter your secret: ") 
 
@@ -69,7 +71,7 @@ def get_oauth():
 
 
 # Get Twitter Favorites
-def get_favorites_list(oauth):
+def get_favorites_list():
 
     screen_name = input("Enter a screen name to search for: ")
     count = input("Enter the number of records to retrieve: ")
@@ -83,7 +85,7 @@ def get_favorites_list(oauth):
     return response
 
 
-def get_user_timeline(oauth):
+def get_user_timeline():
 
     #screen_name = input("Enter a screen name to search for: ")
     #count = input("Enter the number of records to retrieve: ")
@@ -91,8 +93,8 @@ def get_user_timeline(oauth):
     params = {"screen_name": screen_name, "count": count }
 
     response = oauth.get("https://api.twitter.com/1.1/statuses/user_timeline.json", params = params)
-    print("Response status: %s" % response.status_code)
-    print("Body: %s" % response.text)
+    #print("Response status: %s" % response.status_code)
+    #print("Body: %s" % response.text)
 
     return response
 
@@ -124,6 +126,21 @@ def get_media(response):
                 print("Media: %s" % media[0]['media_url'])
 
     return media_files
+
+
+def get_hashtag_media(response):
+    tweets = json.loads(response)
+    media_files = set()
+    for status in tweets["statuses"]:
+        #print("Status: %s" % status)
+        if("media" in status["entities"]):
+            media = status["entities"].get('media', [])
+            if(len(media) > 0):
+                media_files.add(media[0]['media_url'])
+                print("Media: %s" % media[0]['media_url'])
+         
+
+    return media_files
     
 def download_media(media_files):
     for media_file in media_files:
@@ -131,20 +148,32 @@ def download_media(media_files):
 
 
 
-def get_user_timeline_media(oauth):
-    user_timeline = get_user_timeline(oauth)
+def get_user_timeline_media():
+    user_timeline = get_user_timeline()
     get_media(user_timeline.content)
     #download_media(media_files)
 
+
+def search_by_hashtag(q, n):
+    params = {"q": q, "count": n}
+
+    response = oauth.get("https://api.twitter.com/1.1/search/tweets.json", params = params)
+    #print("Response status: %s" % response.status_code)
+    #print("Body: %s" % response.text)
+
+    return response
 
 def main():
     #read configuration settings
     read_config()
 
     #Get the oauth tokens
-    oauth = get_oauth()
+    get_oauth()
 
-    get_user_timeline_media(oauth)
+    #get_user_timeline_media(oauth)
+    response = search_by_hashtag("#GodOfWar #PS4Share", 5)
+    get_hashtag_media(response.content)
+
 
 if __name__ == "__main__":
     main()
