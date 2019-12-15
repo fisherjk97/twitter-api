@@ -210,7 +210,7 @@ def main():
     get_oauth()
 
     
-    response = search_by_hashtag("#Spiderman #PS4Share", 10)
+    response = search_by_hashtag("#GodOfWar #PS4Share", 20)
     media = get_hashtag_media(response.content)
 
     html = media_to_html_table(media)
