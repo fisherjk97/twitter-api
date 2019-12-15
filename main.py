@@ -172,12 +172,12 @@ def data_to_html_table(data):
     return html
 
 def media_to_html_img(data):
-    html = '<img src='"'" + str(data) + "'"" width='50%'/>"
+    html = '<img src='"'" + str(data) + "'"" width='100%'/>"
     print("%s" % html)
     return html
 
 def media_to_html_table(data):
-    html = '<table><tbody>'
+    html = '<table id=\"twitter-api\"><tbody>'
     for item in data:
         html += '<tr><td>' + str(media_to_html_img(item)) + '</td></tr>'
     html += '</tbody></table>'
@@ -188,6 +188,11 @@ def write_file(filename, mode, data):
     f = open(filename, "w")
     f.write(data)
     f.close()
+
+def read_file(filename, mode):
+    with open(filename, mode) as myfile:
+        data = myfile.read()
+        return data
 
 def open_html_file(filename):
     #new = 2 # open in a new tab, if possible
@@ -215,8 +220,13 @@ def main():
 
     html = media_to_html_table(media)
 
+    #Get base index.html
+    base_contents = read_file("base.html", "r")
+
+    new_html = base_contents.replace("<table id=\"twitter-api\"></table>", html)
+
     filename = "index.html"
-    write_file(filename, "w", html)
+    write_file(filename, "w", new_html)
 
     open_html_file(filename)
 
